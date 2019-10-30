@@ -1,31 +1,46 @@
-// Creates and returns a new dancer object that can step
-var makeDancer = function(top, left, timeBetweenSteps) {
-  // use jQuery to create an HTML <span> tag
-  this.$node = $('<span class="dancer"></span>');
-  this.timeBetweenSteps = timeBetweenSteps;
-  // Start setting up important parts of dancer by calling its methods
-  // Sets the position to some random default point within the body
-  this.setPosition(top, left);
-  this.step(this.timeBetweenSteps);
-};
+var makeDancer = class {
 
-makeDancer.prototype.setPosition = function(top, left) {
-  // Use css top and left properties to position our <span> tag
-  // where it belongs on the page. See http://api.jquery.com/css/
-  //
-  var styleSettings = {
-    top: top,
-    left: left
-  };
-  this.$node.css(styleSettings);
-};
+  constructor(top, left, timeBetweenSteps) {
+    this.$node = $('<span class="dancer"></span>');
+    this.timeBetweenSteps = timeBetweenSteps;
+    this.top = top;
+    this.left = left;
 
-makeDancer.prototype.step = function() {
-  // the basic dancer doesn't do anything interesting at all on each step,
-  // it just schedules the next step
-  this.timerID = setTimeout(this.step.bind(this), this.timeBetweenSteps);
-};
+    this.setPosition();
+    this.step();
+  }
 
-makeDancer.prototype.stop = function() {
-  clearTimeout(this.timerID);
+  postInit () {
+    this.height = this.$node.outerHeight();
+    this.width = this.$node.outerWidth();
+    setBounds(this);
+    let wasChanged = false;
+
+    if (this.top + this.height > this.lowerBound) {
+      this.top = this.lowerBound - this.height;
+      wasChanged = true;
+    }
+    if (this.left + this.width > this.rightBound) {
+      this.left = this.rightBound - this.width;
+      wasChanged = true;
+    }
+    if (wasChanged) { this.setPosition(); }
+  }
+
+  step () {
+    this.timerID = setTimeout(this.step.bind(this), this.timeBetweenSteps);
+  }
+
+  setPosition () {
+    var styleSettings = {
+      top: this.top,
+      left: this.left
+    };
+    this.$node.css(styleSettings);
+  }
+
+  stop () {
+    clearTimeout(this.timerID);
+  }
+
 };

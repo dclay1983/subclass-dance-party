@@ -1,17 +1,24 @@
-var moveDancer = function (top, left, timeBetweenSteps) {
-  makeDancer.call(this, top, left, timeBetweenSteps);
-};
+var makeMoveDancer = class extends makeDancer {
+  constructor (top, left, timeBetweenSteps) {
+    super(...arguments);
+  }
 
-moveDancer.prototype = Object.create(makeDancer.prototype);
-moveDancer.prototype.constructor = moveDancer;
+  step () {
+    makeDancer.prototype.step.call(this);
+    var height = this.top;
+    height += (Math.random() * 40) - 20;
+    if (height > this.lowerBound - this.height) {
+      height = this.lowerBound - this.height;
+    }
+    if (height < this.upperBound) { height = this.upperBound; }
+    this.top = height;
 
-moveDancer.prototype.step = function() {
-  makeDancer.prototype.step.call(this);
-  // toggle() is a jQuery method to show/hide the <span> tag.
-  // See http://api.jquery.com/category/effects/ for this and
-  // other effects you can use on a jQuery-wrapped html tag.
-  this.setPosition(
-    ($('body').height() - $('.topbar').height()) * Math.random(),
-    $('body').width() * Math.random()
-  );
+    var width = this.left;
+    width += (Math.random() * 40) - 20;
+    if (width > this.rightBound - this.width) { width = this.rightBound - this.width; }
+    if (width < this.leftBound) { width = this.leftBound; }
+    this.left = width;
+
+    this.setPosition();
+  }
 };
